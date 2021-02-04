@@ -5,7 +5,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Library.fs"/>
+        <Compile Include="Library.fs" />
+        <Compile Include="Day01.fs" />
+        <Compile Include="Day02.fs" />
     </ItemGroup>
 
 </Project>

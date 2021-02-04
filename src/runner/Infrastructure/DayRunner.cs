@@ -24,13 +24,13 @@ namespace aoc_runner.Infrastructure
             (
                 from assembly in assemblies
                 from type in assembly.GetTypes()
-                where type.Namespace == "aoc_runner" || type.Namespace == "solution"
+                where type.Namespace == "aoc_runner" || type.Namespace?.StartsWith("solutions") == true
                 where type.Name?.StartsWith("Day") == true
                 let dayPart = type.Name[3..5]
                 let parsed = new {canParse = int.TryParse(dayPart, out var parsed), day = parsed}
                 where parsed.canParse
-                select new KeyValuePair<int, Type>(parsed.day, type)
-            ).ToLookup(x => x.Key, x => x.Value);
+                select (parsed.day, type)
+            ).ToLookup(x => x.day, x => x.type);
         }
 
         private readonly int         _day;

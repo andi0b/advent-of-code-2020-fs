@@ -1,8 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aoc-runner", "src\aoc-runner.csproj", "{243CC5D2-5AA2-4F3A-BC8C-C1B6639366B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aoc-runner", "src\runner\aoc-runner.csproj", "{243CC5D2-5AA2-4F3A-BC8C-C1B6639366B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "tests\tests.csproj", "{3573B180-CB86-422E-97B6-B18038DB8759}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "solutions", "src\solutions\solutions.fsproj", "{52E6B290-40DD-4F53-8CAF-D4F3E75014DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +20,9 @@ Global
 		{3573B180-CB86-422E-97B6-B18038DB8759}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3573B180-CB86-422E-97B6-B18038DB8759}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3573B180-CB86-422E-97B6-B18038DB8759}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52E6B290-40DD-4F53-8CAF-D4F3E75014DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52E6B290-40DD-4F53-8CAF-D4F3E75014DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52E6B290-40DD-4F53-8CAF-D4F3E75014DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52E6B290-40DD-4F53-8CAF-D4F3E75014DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

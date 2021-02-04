@@ -14,13 +14,17 @@ namespace aoc_runner.Infrastructure
         
         static DayRunner()
         {
-            var assembly = Assembly.GetExecutingAssembly();
+            var assemblies = new[]
+            {
+                Assembly.GetExecutingAssembly(), typeof(solutions.Say).Assembly
+            };
 
             // auto discover solution types
             DayTypes =
             (
+                from assembly in assemblies
                 from type in assembly.GetTypes()
-                where type.Namespace == "aoc_runner"
+                where type.Namespace == "aoc_runner" || type.Namespace == "solution"
                 where type.Name?.StartsWith("Day") == true
                 let dayPart = type.Name[3..5]
                 let parsed = new {canParse = int.TryParse(dayPart, out var parsed), day = parsed}

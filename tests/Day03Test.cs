@@ -1,5 +1,6 @@
 ﻿using aoc_runner;
 using FluentAssertions;
+using solutions;
 using Xunit;
 
 namespace tests
@@ -21,7 +22,7 @@ namespace tests
             ".#..#...#.#",
         };
         
-        [Fact] Day03 GetInstance() => new(_sampleInput);
+        [Fact] Day03fs GetInstance() => new(_sampleInput);
 
         [Fact] void Part1() => GetInstance().Part1().Should().Be(7);
         

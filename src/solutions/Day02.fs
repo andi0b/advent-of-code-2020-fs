@@ -38,7 +38,6 @@ module Solution02 =
         |> Seq.where (Input.checkPolicy isValidFunc)
         |> Seq.length
 
-
 type Day02fs(input: string []) =
     let inputs =
         input |> Array.map Solution02.Input.parse

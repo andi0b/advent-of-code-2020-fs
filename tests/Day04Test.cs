@@ -1,5 +1,5 @@
-﻿using aoc_runner;
-using FluentAssertions;
+﻿using FluentAssertions;
+using solutions;
 using Xunit;
 
 namespace tests
@@ -21,7 +21,7 @@ hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in";
         
 
-        [Fact] Day04 GetInstance() => new Day04(_part1DemoInput);
+        [Fact] Day04fs GetInstance() => new (_part1DemoInput);
 
         [Fact] void Part1() => GetInstance().Part1().Should().Be(2);
         
@@ -53,8 +53,8 @@ hgt:59cm ecl:zzz
 eyr:2038 hcl:74454a iyr:2023
 pid:3556412378 byr:2007";
 
-        [Fact] void Part2Valid() => new Day04(_part2ValidPassports).Part2().Should().Be(4);
-        [Fact] void Part2Invalid() => new Day04(_part2InvalidPassports).Part2().Should().Be(0);
+        [Fact] void Part2Valid() => new Day04fs(_part2ValidPassports).Part2().Should().Be(4);
+        [Fact] void Part2Invalid() => new Day04fs(_part2InvalidPassports).Part2().Should().Be(0);
 
     }
 }

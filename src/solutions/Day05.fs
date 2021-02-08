@@ -4,16 +4,18 @@ open System
 
 module Solution05 =
 
-    let convertToBinaryString =
-        String.map (function
-            | 'B'
-            | 'R' -> '1'
-            | _ -> '0')
+    module seatId =
+        let convertToBinaryString =
+            String.map (function
+                | 'B'
+                | 'R' -> '1'
+                | _ -> '0')
 
-    let intFromBinary binaryString = Convert.ToInt32(binaryString, 2)
-    
-    let parseSeatIds =
-        Seq.map (intFromBinary << convertToBinaryString)
+        let intBin s = Convert.ToInt32(s, 2)
+
+        let parse = intBin << convertToBinaryString
+
+    let parseSeatIds = Seq.map seatId.parse
 
     let highestSeatId = Seq.max
 
@@ -22,7 +24,6 @@ module Solution05 =
 
         [ 0 .. Seq.max takenSeats ]
         |> Seq.findBack (not << seatMap.Contains)
-
 
 
 type Day05fs(input: string array) =

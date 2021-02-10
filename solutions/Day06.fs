@@ -19,7 +19,7 @@ module Solution06 =
         |> Array.map parseGroup
 
     let countAnswers (groupReducer: Group -> Answers) =
-        Seq.map (groupReducer >> Seq.length) >> Seq.sum
+        Seq.sumBy (groupReducer >> Seq.length) 
 
     let part1 = countAnswers Set.unionMany
 

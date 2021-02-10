@@ -17,11 +17,9 @@ module Solution06 =
 
         input.Split(Environment.NewLine + Environment.NewLine)
         |> Array.map parseGroup
-   
-    let countAnswers (groupReducer: Group -> Answers) groups =
-        groups
-        |>Seq.map (groupReducer >> Seq.length)
-        |> Seq.sum
+
+    let countAnswers (groupReducer: Group -> Answers) =
+        Seq.map (groupReducer >> Seq.length) >> Seq.sum
 
     let part1 = countAnswers Set.unionMany
 

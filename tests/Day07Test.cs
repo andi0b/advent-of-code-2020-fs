@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
-using aoc_runner;
 using FluentAssertions;
+using solutions;
 using static aoc_runner.Day07;
 
 namespace tests
@@ -21,7 +21,7 @@ namespace tests
             "dotted black bags contain no other bags."
         };
 
-        [Fact] Day07 GetInstance() => new Day07(_sampleInput);
+        [Fact] Day07fs GetInstance() => new Day07fs(_sampleInput);
 
         [Fact] void Part1() => GetInstance().Part1().Should().Be(4);
 

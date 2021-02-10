@@ -5,7 +5,7 @@ open System
 module Solution06 =
 
     type Answers = char Set
-    type Group = Answers Set
+    type Group = Answers array
 
     let parseGroups (input: string): Group [] =
         let parseAnswers = Set.ofSeq
@@ -13,7 +13,6 @@ module Solution06 =
         let parseGroup (g: string) =
             g.Split Environment.NewLine
             |> Array.map parseAnswers
-            |> Set.ofArray
 
         input.Split(Environment.NewLine + Environment.NewLine)
         |> Array.map parseGroup

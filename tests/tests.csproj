@@ -21,8 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\runner\aoc-runner.csproj" />
-      <ProjectReference Include="..\src\solutions\solutions.fsproj" />
+      <ProjectReference Include="..\runner\aoc-runner.csproj" />
+      <ProjectReference Include="..\solutions\solutions.fsproj" />
     </ItemGroup>
 
 </Project>

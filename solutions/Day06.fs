@@ -8,11 +8,11 @@ module Solution06 =
     type Group = Answers Set
 
     let parseGroups (input: string): Group [] =
-        let parsePerson = Set.ofSeq
+        let parseAnswers = Set.ofSeq
 
         let parseGroup (g: string) =
             g.Split Environment.NewLine
-            |> Array.map parsePerson
+            |> Array.map parseAnswers
             |> Set.ofArray
 
         input.Split(Environment.NewLine + Environment.NewLine)

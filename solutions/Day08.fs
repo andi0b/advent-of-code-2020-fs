@@ -8,68 +8,76 @@ module Solution08 =
         | Acc of int
         | Jmp of int
         | Nop of int
+        static member parse s: Operation =
+            let m = Regex.Match(s, "(?<op>\S*) (?<arg>\S*)")
+            let op = m.Groups.["op"].Value
+            let arg = m.Groups.["arg"].Value |> int
+
+            match op with
+            | "acc" -> Acc arg
+            | "jmp" -> Jmp arg
+            | "nop" -> Nop arg
+            | _ -> failwith "unknown operation"
 
     type BootCode = Operation list
 
-    let parseOp s: Operation =
-        let m = Regex.Match(s, "(?<op>\S*) (?<arg>\S*)")
-        let op = m.Groups.["op"].Value
-        let arg = m.Groups.["arg"].Value |> int
+    let parse l: BootCode =
+        l |> Seq.map Operation.parse |> List.ofSeq
 
-        match op with
-        | "acc" -> Acc arg
-        | "jmp" -> Jmp arg
-        | "nop" -> Nop arg
-        | _ -> failwith "unknown operation"
+    type HandheldState =
+        { accumulator: int
+          nextInstructionId: int
+          isFinished: bool
+          isInfiniteLoop: bool }
+        static member Initial =
+            { accumulator = 0
+              nextInstructionId = 0
+              isFinished = false
+              isInfiniteLoop = false }
 
-    let parseBootCode l: BootCode = l |> Seq.map parseOp |> List.ofSeq
+    let nextState (code: BootCode) (opHistory: Set<int>) (state: HandheldState) =
 
-    module Handheld =
-        type HandheldState =
-            { accumulator: int
-              instructionId: int }
-
-        let initialState = { accumulator = 0; instructionId = 0 }
-
-        let nextState (code: BootCode) (state: HandheldState) =
-            match code.[state.instructionId] with
+        let applyOp s =
+            match code.[s.nextInstructionId] with
             | Acc param ->
-                { accumulator = state.accumulator + param
-                  instructionId = state.instructionId + 1 }
+                { s with
+                      accumulator = s.accumulator + param
+                      nextInstructionId = s.nextInstructionId + 1 }
             | Jmp param ->
-                { state with
-                      instructionId = state.instructionId + param }
+                { s with
+                      nextInstructionId = s.nextInstructionId + param }
             | Nop _ ->
-                { state with
-                      instructionId = state.instructionId + 1 }
+                { s with
+                      nextInstructionId = s.nextInstructionId + 1 }
 
-        let isFinished (code: BootCode) (state: HandheldState) = state.instructionId = code.Length
+        let checkFinished s =
+            { s with
+                  isFinished = s.nextInstructionId = code.Length }
 
-        let extractFinishedState code state =
-            {| accumulatorEndState = state.accumulator
-               isFinished = isFinished code state |}
+        let checkInfiniteLoop s =
+            { s with
+                  isInfiniteLoop = opHistory.Contains(s.nextInstructionId) }
 
-        let run code =
-            let generator (instructionIdHistory: Set<int>, state) =
-
-                if isFinished code state then
-                    None
-                else
-                    let nextState = nextState code state
-
-                    let isInfiniteLoop =
-                        instructionIdHistory.Contains nextState.instructionId
-
-                    if isInfiniteLoop
-                    then None
-                    else Some(nextState, (instructionIdHistory.Add nextState.instructionId, nextState))
-
-            Seq.unfold generator (Set.empty, initialState)
-            |> Seq.last
-            |> extractFinishedState code
+        state
+        |> applyOp
+        |> checkFinished
+        |> checkInfiniteLoop
 
 
-    let getLastAccumulator code = (Handheld.run code).accumulatorEndState
+    let run code =
+
+        let generator (opHistory, handheldState) =
+            if handheldState.isFinished then
+                None
+            else
+                match nextState code opHistory handheldState with
+                | { isInfiniteLoop = true } -> None
+                | nxt -> Some(nxt, (opHistory.Add nxt.nextInstructionId, nxt))
+
+        Seq.unfold generator (Set.empty, HandheldState.Initial)
+        |> Seq.last
+
+    let getLastAccumulator code = (run code).accumulator
 
     let createCodePermutations (code: BootCode): BootCode list =
 
@@ -92,13 +100,13 @@ module Solution08 =
 
     let getLastAccumulatorForFixedCode code =
         createCodePermutations code
-        |> Seq.map Handheld.run
+        |> Seq.map run
         |> Seq.find (fun x -> x.isFinished)
-        |> fun x -> x.accumulatorEndState
+        |> fun x -> x.accumulator
 
 
 type Day08fs(input: string []) =
-    let bootCode = Solution08.parseBootCode input
+    let bootCode = Solution08.parse input
 
     member this.Part1() = Solution08.getLastAccumulator bootCode
 

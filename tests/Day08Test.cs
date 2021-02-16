@@ -1,5 +1,5 @@
-﻿using aoc_runner;
-using FluentAssertions;
+﻿using FluentAssertions;
+using solutions;
 using Xunit;
 
 namespace tests
@@ -19,7 +19,7 @@ namespace tests
             "acc +6"
         };
 
-        [Fact] Day08 GetInstance() => new Day08(_demoInput);
+        [Fact] Day08fs GetInstance() => new (_demoInput);
 
         [Fact] void Part1() => GetInstance().Part1().Should().Be(5);
         [Fact] void Part2() => GetInstance().Part2().Should().Be(8);

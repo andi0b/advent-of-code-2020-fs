@@ -38,14 +38,12 @@ module Solution07 =
             |> Map.ofSeq
 
         let rec parentBagColors bagColor: string seq =
-            let matches = reverseLookup |> Map.tryFind bagColor
-
-            match matches with
+            match reverseLookup |> Map.tryFind bagColor with
             | Some m ->
                 m
                 |> Seq.collect parentBagColors
                 |> Seq.distinct
-                |> Seq.append reverseLookup.[bagColor]
+                |> Seq.append m
             | None -> Seq.empty
 
         parentBagColors color |> Seq.length

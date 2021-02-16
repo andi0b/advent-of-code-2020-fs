@@ -17,7 +17,7 @@ module Solution08 =
             | "acc" -> Acc arg
             | "jmp" -> Jmp arg
             | "nop" -> Nop arg
-            | _ -> failwith "unknown operation"
+            | _ -> failwith $"unknown operation '{op}'"
 
     type BootCode = Operation list
 
@@ -37,35 +37,30 @@ module Solution08 =
 
     let nextState (code: BootCode) (opHistory: Set<int>) (state: HandheldState) =
 
+        let incrementInstructionId by s =
+            { s with
+                  nextInstructionId = s.nextInstructionId + by }
+
         let applyOp s =
             match code.[s.nextInstructionId] with
             | Acc param ->
                 { s with
-                      accumulator = s.accumulator + param
-                      nextInstructionId = s.nextInstructionId + 1 }
-            | Jmp param ->
-                { s with
-                      nextInstructionId = s.nextInstructionId + param }
-            | Nop _ ->
-                { s with
-                      nextInstructionId = s.nextInstructionId + 1 }
+                      accumulator = s.accumulator + param }
+                |> incrementInstructionId 1
 
-        let checkFinished s =
-            { s with
-                  isFinished = s.nextInstructionId = code.Length }
+            | Jmp param -> s |> incrementInstructionId param
 
-        let checkInfiniteLoop s =
+            | Nop _ -> s |> incrementInstructionId 1
+
+        let applyChecks s =
             { s with
+                  isFinished = s.nextInstructionId = code.Length
                   isInfiniteLoop = opHistory.Contains(s.nextInstructionId) }
 
-        state
-        |> applyOp
-        |> checkFinished
-        |> checkInfiniteLoop
+        state |> applyOp |> applyChecks
 
 
     let run code =
-
         let generator (opHistory, handheldState) =
             if handheldState.isFinished then
                 None
@@ -79,7 +74,7 @@ module Solution08 =
 
     let getLastAccumulator code = (run code).accumulator
 
-    let createCodePermutations (code: BootCode): BootCode list =
+    let createCodePermutations (code: BootCode): BootCode seq =
 
         let flipNopJmp =
             function
@@ -88,22 +83,22 @@ module Solution08 =
             | _ -> None
 
         let replaceAt idx value =
-            List.indexed
-            >> List.map (fun (i, x) -> if i = idx then value else x)
+            List.mapi (fun i v -> if i = idx then value else v)
 
         code
-        |> List.indexed
-        |> List.choose (fun (i, op) ->
+        |> Seq.indexed
+        |> Seq.choose (fun (i, op) ->
             match (flipNopJmp op) with
             | Some flippedOp -> Some(code |> (replaceAt i flippedOp))
             | None -> None)
 
     let getLastAccumulatorForFixedCode code =
-        createCodePermutations code
-        |> Seq.map run
-        |> Seq.find (fun x -> x.isFinished)
-        |> fun x -> x.accumulator
+        let workingEndState =
+            createCodePermutations code
+            |> Seq.map run
+            |> Seq.find (fun x -> x.isFinished)
 
+        workingEndState.accumulator
 
 type Day08fs(input: string []) =
     let bootCode = Solution08.parse input

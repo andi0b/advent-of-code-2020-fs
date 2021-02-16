@@ -88,9 +88,8 @@ module Solution08 =
         code
         |> Seq.indexed
         |> Seq.choose (fun (i, op) ->
-            match (flipNopJmp op) with
-            | Some flippedOp -> Some(code |> (replaceAt i flippedOp))
-            | None -> None)
+            flipNopJmp op
+            |> Option.map (fun flipped -> code |> replaceAt i flipped))
 
     let getLastAccumulatorForFixedCode code =
         let workingEndState =

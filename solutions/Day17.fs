@@ -45,6 +45,7 @@ module Solution17 =
         let activeNeighborCount =
             getNeighbours
             >> Seq.filter isCubeActive
+            >> Seq.truncate 4 // only count to 4, we don't need more
             >> Seq.length
 
         let cubesToCheck =
@@ -60,9 +61,9 @@ module Solution17 =
 
     let solve dim additionalDimensions =
         let dimension = addDimensions dim additionalDimensions
-
-        [ 1 .. 6 ]
-        |> Seq.fold (fun x y -> nextIteration x) dimension
+       
+        { 1 .. 6 }
+        |> Seq.fold (fun x _ -> nextIteration x) dimension
         |> Seq.length
 
 type Day17fs(input: string []) =

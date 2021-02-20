@@ -22,25 +22,22 @@ module Solution17 =
         |> Seq.collect id
         |> Set.ofSeq
 
-    let repeat item times =
-        seq {
-            for _ in 1 .. times do
-                yield item
-        }
-
+    // Add additional dimensions to Pocket Dimension. eg 2D to 3D (num=1) or 4D (num=2)
     let addDimensions (dim: PocketDimension) num: PocketDimension =
-        let addCoordinates = repeat 0 num |> List.ofSeq
-        dim |> Set.map (fun cube -> cube @ addCoordinates)
+        let repeat value times =
+            [ 1 .. times ] |> List.map (fun _ -> value)
 
-    let getNeighbours (cube: CubeLocation): CubeLocation list =
+        dim |> Set.map (fun cube -> cube @ (repeat 0 num))
+
+    let getNeighbours (cube: CubeLocation): CubeLocation seq =
         let reducer (x: int list list) (y: int list list) =
             List.allPairs x y
             |> List.map (fun (x, y) -> (x @ y))
 
         cube
-        |> List.map (fun c -> [ [ c - 1 ]; [ c ]; [ c + 1 ] ])
-        |> List.reduce reducer
-        |> List.where (fun c -> c <> cube)
+        |> Seq.map (fun c -> [ [ c - 1 ]; [ c ]; [ c + 1 ] ])
+        |> Seq.reduce reducer
+        |> Seq.filter (fun c -> c <> cube)
 
     let nextIteration (dim: PocketDimension): PocketDimension =
         let isCubeActive = dim.Contains
@@ -61,14 +58,12 @@ module Solution17 =
 
         cubesToCheck |> Set.filter cubeShouldBeActive
 
-
     let solve dim additionalDimensions =
         let dimension = addDimensions dim additionalDimensions
 
         [ 1 .. 6 ]
         |> Seq.fold (fun x y -> nextIteration x) dimension
         |> Seq.length
-
 
 type Day17fs(input: string []) =
     let pocketDimension = Solution17.parseCubes input

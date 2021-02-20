@@ -35,19 +35,22 @@ module Solution12 =
           y: int }
         static member Initial = { x = 0; y = 0 }
         member this.manhattanDistanceFromZero = abs this.x + abs this.y
+        member this.turnRight = { x = this.y; y = (-this.x) }
+        member this.turnLeft = { x = (-this.y); y = this.x }
+        member this.turnAround = { x = (-this.x); y = (-this.y) }
         static member (+)(a, b: Vector) = { x = a.x + b.x; y = a.y + b.y }
         static member (*)(a: Vector, b: int) = { x = a.x * b; y = a.y * b }
 
         member this.move heading distance =
             let moveVector =
                 match heading with
-                | Heading.North -> { x = 0; y = distance }
-                | Heading.East -> { x = distance; y = 0 }
-                | Heading.South -> { x = 0; y = (-distance) }
-                | Heading.West -> { x = (-distance); y = 0 }
+                | Heading.North -> { x = 0; y = 1 }
+                | Heading.East -> { x = 1; y = 0 }
+                | Heading.South -> { x = 0; y = (-1) }
+                | Heading.West -> { x = (-1); y = 0 }
                 | _ -> ArgumentOutOfRangeException() |> raise
 
-            this + moveVector
+            this + moveVector * distance
 
 
     let turnHeading (oldHeading: Heading) (turnInstruction: TurnInstruction): Heading =
@@ -99,13 +102,10 @@ module Solution12 =
             function
             | Turn ti ->
                 let newWaypoint =
-                    let x = state.waypoint.x
-                    let y = state.waypoint.y
-
                     match turnHeading Heading.North ti with
-                    | Heading.East -> { x = y; y = (-x) }
-                    | Heading.West -> { x = (-y); y = x }
-                    | Heading.South -> { x = (-x); y = (-y) }
+                    | Heading.East -> state.waypoint.turnLeft
+                    | Heading.West -> state.waypoint.turnRight
+                    | Heading.South -> state.waypoint.turnAround
                     | _ -> state.waypoint
 
                 { state with waypoint = newWaypoint }

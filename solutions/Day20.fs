@@ -5,39 +5,31 @@ open System.Text.RegularExpressions
 
 module Solution20 =
 
-    type Hash = int
-
-    type Image =
-        { tileId: int
-          content: char [,]
-          left: Hash
-          right: Hash
-          top: Hash
-          bottom: Hash }
-
     type Tile =
         { tileId: int
-          permutations: Image list }
+          content: char [,]
+          left: int
+          right: int
+          top: int
+          bottom: int }
 
-    let tileSize = 10
-
-    module Image =
-        let createHash (chars: char [,]) =
-            let shift amount value =
-                if value = '#' then (1 <<< amount) else 0
-
-            chars
-            |> Seq.cast
-            |> Seq.indexed
-            |> Seq.fold (fun state (i, v) -> state ||| shift i v) 0
+    module Tile =
+        let tileSize = 10
 
         let create id content =
+            let max = tileSize - 1
+
+            let hash =
+                Seq.cast
+                >> Seq.indexed
+                >> Seq.fold (fun state (i, v) -> state ||| (if v = '#' then (1 <<< i) else 0)) 0
+
             { tileId = id
               content = content
-              left = createHash content.[0..0, 0..]
-              right = createHash content.[tileSize - 1..tileSize - 1, 0..]
-              top = createHash content.[0.., 0..0]
-              bottom = createHash content.[0.., tileSize - 1..tileSize - 1] }
+              left = hash content.[0..0, 0..]
+              right = hash content.[max..max, 0..]
+              top = hash content.[0.., 0..0]
+              bottom = hash content.[0.., max..max] }
 
         // Methods to turn and flip Tiles
         let turn content =
@@ -53,24 +45,17 @@ module Solution20 =
             |> Array2D.mapi (fun x y _ -> content.[tileSize - 1 - x, y])
 
         /// Crete all 8 permutations for an image (4 directions + flipped)
-        let createPermutations (image: Image) =
-            let turnFlip (shouldFlip, turns) =
-                if shouldFlip then flip image.content else image.content
+        let createPermutations (image: Tile) =
+            Seq.allPairs [ flip; id ] [ 0 .. 3 ]
+            |> Seq.map (fun (flipMaybe, turns) ->
+                image.content
+                |> flipMaybe
                 |> turnMultiple turns
-
-            Seq.allPairs [ true; false ] [ 0 .. 3 ]
-            |> Seq.map turnFlip
-            |> Seq.map (create image.tileId)
+                |> create image.tileId)
 
         let fitsLeftOf other image = image.right = other.left
+
         let fitsTopOf other image = image.bottom = other.top
-
-    module Tile =
-        let createTile id content =
-            let image = Image.create id content
-
-            { tileId = id
-              permutations = Image.createPermutations image |> List.ofSeq }
 
         let parse (str: string) =
             let lines = str.Split(Environment.NewLine)
@@ -82,11 +67,11 @@ module Solution20 =
             let readChar x y = lines.[y + 1].[x]
             let content = Array2D.init tileSize tileSize readChar
 
-            createTile id content
+            create id content
 
     type Sea =
         { tiles: Tile list
-          cornerTiles: Image list }
+          cornerTiles: Tile list }
 
     let createSea (str: string) =
         let tiles =
@@ -94,27 +79,26 @@ module Solution20 =
             |> Seq.map Tile.parse
             |> Seq.toList
 
-        let allPermutations =
-            tiles |> Seq.collect (fun x -> x.permutations)
+        let permutations =
+            tiles
+            |> Seq.collect Tile.createPermutations
+            |> Seq.toList
 
         let cornerTiles =
-            allPermutations
-            |> Seq.filter (fun image ->
-                let otherPermutations =
-                    allPermutations
-                    |> Seq.filter (fun other -> other.tileId <> image.tileId)
+            permutations
+            |> Seq.filter (fun tile ->
+                let others =
+                    permutations
+                    |> Seq.filter (fun other -> other.tileId <> tile.tileId)
 
+                let notAny comparer = others |> (not << Seq.exists comparer)
 
-                let notAnyFitting comparer =
-                    otherPermutations |> Seq.exists comparer |> not
-
-                notAnyFitting (Image.fitsLeftOf image)
-                && notAnyFitting (Image.fitsTopOf image))
+                notAny (Tile.fitsLeftOf tile)
+                && notAny (Tile.fitsTopOf tile))
             |> List.ofSeq
 
         { tiles = tiles
           cornerTiles = cornerTiles }
-
 
     let calcCornerTileValue sea =
         sea.cornerTiles

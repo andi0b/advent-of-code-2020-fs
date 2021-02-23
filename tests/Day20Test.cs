@@ -59,7 +59,7 @@ namespace tests
             var tile = Solution20.TileModule.parse(_tile2311);
             var content = tile.permutations.First().content;
             
-            var turnedAround = Solution20.ImageModule.turnMultiple(4, content);
+            var turnedAround = Solution20.Image.turnMultiple(4, content);
             turnedAround.Should().BeEquivalentTo(content);
         }
 
@@ -67,7 +67,7 @@ namespace tests
         void Tile_Flip_Ids()
         {
             var image = Solution20.TileModule.parse(_tile2311).permutations.First();
-            var flipped = Solution20.ImageModule.create(image.tileId, Solution20.ImageModule.flip(image.content));
+            var flipped = Solution20.Image.create(image.tileId, Solution20.Image.flip(image.content));
 
             flipped.left.Should().Be(image.right);
             flipped.right.Should().Be(image.left);

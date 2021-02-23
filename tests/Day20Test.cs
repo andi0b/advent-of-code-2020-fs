@@ -1,6 +1,8 @@
 ﻿using System.Dynamic;
+using System.Linq;
 using aoc_runner;
 using FluentAssertions;
+using solutions;
 using Xunit;
 
 namespace tests
@@ -8,7 +10,7 @@ namespace tests
     public class Day20Test
     {
         [Fact]
-        Day20 GetInstance() => new Day20(_demoInput);
+        Day20fs GetInstance() => new (_demoInput);
 
         [Fact]
         void Part1() => GetInstance().Part1().Should().Be(20899048083289);
@@ -54,17 +56,21 @@ namespace tests
         [Fact]
         void Tile_Turn_Around()
         {
-            var tile = Day20.Tile.Parse(_tile2311);
-            tile.TurnClockwise().TurnClockwise().TurnClockwise().TurnClockwise().Should().BeEquivalentTo(tile, o=>o.ComparingByMembers<Day20.Tile>());
+            var tile = Solution20.TileModule.parse(_tile2311);
+            var content = tile.permutations.First().content;
+            
+            var turnedAround = Solution20.ImageModule.turnMultiple(4, content);
+            turnedAround.Should().BeEquivalentTo(content);
         }
 
         [Fact]
         void Tile_Flip_Ids()
         {
-            var tile = Day20.Tile.Parse(_tile2311);
-            var flipped = tile.Flip();
-            flipped.LeftId.Should().Be(tile.RightId);
-            flipped.RightId.Should().Be(tile.LeftId);
+            var image = Solution20.TileModule.parse(_tile2311).permutations.First();
+            var flipped = Solution20.ImageModule.create(image.tileId, Solution20.ImageModule.flip(image.content));
+
+            flipped.left.Should().Be(image.right);
+            flipped.right.Should().Be(image.left);
         } 
 
         private string _tile2311 = @"Tile 2311:

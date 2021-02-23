@@ -1,20 +1,22 @@
 ﻿namespace solutions
 
 module Solution01 =
+    let findResult (pairs: int array seq) =
+        pairs
+        |> Seq.find (fun x -> Array.sum x = 2020)
+        |> Seq.reduce (*)
 
     let part1 numbers =
-        List.allPairs numbers numbers
-        |> List.find (fun (a, b) -> a + b = 2020)
-        |> fun (a, b) -> a * b
+        Seq.allPairs numbers numbers
+        |> Seq.map (fun (a, b) -> [| a; b |])
+        |> findResult
 
     let part2 numbers =
-        List.allPairs numbers (List.allPairs numbers numbers) 
-        |> List.map (fun (a, (b, c)) -> (a, b, c))
-        |> List.find (fun (a, b, c) -> a + b + c = 2020)
-        |> fun (a, b, c) -> a * b * c
+        Seq.allPairs numbers numbers
+        |> Seq.allPairs numbers
+        |> Seq.map (fun (a, (b, c)) -> [| a; b; c |])
+        |> findResult
 
-
-type Day01fs(input: int []) =
-    let numbers = input |> Array.toList
-    member this.Part1() = Solution01.part1 numbers
-    member this.Part2() = Solution01.part2 numbers
+type Day01fs(input: int array) =
+    member this.Part1() = Solution01.part1 input
+    member this.Part2() = Solution01.part2 input
